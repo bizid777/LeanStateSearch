@@ -1,33 +1,34 @@
-[tool.poetry]
-authors = ["timechess <tyc221@ruc.edu.cn>"]
-description = ""
+[project]
 name = "state_search_be"
-packages = [
-    { include = "state_search_be" },
-    { include = "state_search", from = "state_search_be" },
-]
-readme = "README.md"
 version = "0.1.0"
+description = "Backend service for Lean State Search"
+readme = "README.md"
+requires-python = ">=3.11, <3.13"
+authors = [{ name = "timechess", email = "tyc221@ruc.edu.cn" }]
+dependencies = [
+    "grpcio>=1.69",
+    "grpcio-tools>=1.69",
+    "jsonlines>=4.0",
+    "prisma>=0.15",
+    "protobuf>=5.29",
+    "python-dotenv>=1.0",
+    "sentence-transformers>=3.3",
+    "qdrant-client>=1.13",
+]
 
-[tool.poetry.dependencies]
-grpcio = "^1.69.0"
-grpcio-tools = "^1.69.0"
-jsonlines = "^4.0.0"
-prisma = "^0.15.0"
-protobuf = "^5.29.3"
-python = ">=3.11, <3.13"
-python-dotenv = "^1.0.0"
-sentence-transformers = "^3.3.1"
-qdrant-client = "^1.13.2"
+[tool.hatch.build]
+# Explicitly include the nested proto-generated package as well.
+include = ["state_search_be/**/*.py", "state_search_be/state_search/**/*.py"]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.version]
+path = "state_search_be/__init__.py"
 
 [build-system]
-build-backend = "poetry.core.masonry.api"
-requires = ["poetry-core"]
-
-[[tool.poetry.source]]
-name = "mirrors"
-url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
-priority = "primary"
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
 
 [tool.ruff]
 line-length = 88

@@ -1,0 +1,15 @@
+## 2025-05-09:21:44 UTC
+
+[ ] Migrate Python backend build system from Poetry ➔ Hatchling PEP 621 and use `uv` for dependency resolution/install.
+    • Converted `state-search-be/pyproject.toml` and added `__version__`.
+    • Remove Poetry from docs; replace with `uv pip install --editable .` workflow.
+
+[ ] Provide idempotent model downloader.
+    • Added `scripts/setup_model.py` which git-clones if missing.
+
+[ ] Make Mathlib revision fully pluggable.
+    • Confirmed existing pipeline already takes `--rev`; create convenience wrapper that auto-detects latest mathlib tag and re-ingests vector store.
+
+[ ] Update documentation (README, Justfile) to reflect uv + hatch.
+
+[ ] Add Git hooks for Ruff, MyPy, and pre-commit formatting. 
