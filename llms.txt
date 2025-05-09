@@ -1,15 +1,36 @@
-## 2025-05-09:21:44 UTC
+## 2025-05-09:21:47 UTC – Road-map
 
-[ ] Migrate Python backend build system from Poetry ➔ Hatchling PEP 621 and use `uv` for dependency resolution/install.
-    • Converted `state-search-be/pyproject.toml` and added `__version__`.
-    • Remove Poetry from docs; replace with `uv pip install --editable .` workflow.
+### Build & Dependency Management
+- [x] Replace Poetry with Hatchling + PEP 621 metadata
+  - [x] Update `pyproject.toml`
+  - [x] Add `__version__` constant for Hatch
+  - [ ] Remove Poetry invocations in docs / scripts
+- [x] Switch to `uv` for dependency resolution
+  - [ ] Document `uv pip install -e state-search-be`
+  - [ ] Add `uv.lock` if desired for reproducibility
 
-[ ] Provide idempotent model downloader.
-    • Added `scripts/setup_model.py` which git-clones if missing.
+### Model Handling
+- [x] Create idempotent model downloader (`scripts/setup_model.py`)
+- [ ] Integrate model-download into bootstrap Justfile target
 
-[ ] Make Mathlib revision fully pluggable.
-    • Confirmed existing pipeline already takes `--rev`; create convenience wrapper that auto-detects latest mathlib tag and re-ingests vector store.
+### Mathlib Revision Flexibility
+- [ ] Introduce `MATHLIB_REV` env var with default `latest`
+- [ ] Script to auto-discover latest mathlib git tag
+- [ ] Wrapper that (a) downloads premises jsonl for that rev, (b) uploads them, (c) rebuilds vector store
+- [ ] Add CLI flag `--rev latest` to backend API (just passes through for now)
 
-[ ] Update documentation (README, Justfile) to reflect uv + hatch.
+### Developer UX
+- [ ] Replace `Makefile` with `Justfile` recipes
+  - [ ] `just bootstrap` – installs brew deps, uv sync, pnpm install, model download, DB migrations
+  - [ ] `just dev` – runs backend + frontend concurrently
+- [ ] Commit‐msg & pre-push hooks via `pre-commit`
+  - [ ] ruff / mypy / isort / black
+  - [ ] pnpm lint for frontend
 
-[ ] Add Git hooks for Ruff, MyPy, and pre-commit formatting. 
+### Documentation
+- [ ] Update top-level `README.md` to reflect new workflow
+- [ ] Add how-to for local bare-metal install on macOS
+- [ ] Keep `docker` & `nix` sections but mark as optional
+
+### Continuous Integration
+- [ ] CI job that uses `uv` to install and runs lint, type-check, and unit tests 
