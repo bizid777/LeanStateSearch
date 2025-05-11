@@ -1,5 +1,6 @@
 import asyncio
 import grpc
+from dotenv import load_dotenv
 from state_search_be.api import LeanStateSearchServicer
 import logging
 from state_search_be.state_search.v1.state_search_pb2_grpc import (
@@ -8,6 +9,8 @@ from state_search_be.state_search.v1.state_search_pb2_grpc import (
 from prisma import Prisma
 from qdrant_client import QdrantClient
 import os
+
+load_dotenv()
 
 if os.getenv("MODE") == "docker":
     os.environ["DATABASE_URL"] = (
@@ -23,9 +26,14 @@ async def serve() -> None:
     db = Prisma()
     if os.getenv("MODE") == "docker":
         qdrant_url = "http://qdrant:6333"
+        vb = QdrantClient(qdrant_url)
     else:
-        qdrant_url = f"http://localhost:{os.getenv('QDRANT_PORT')}"
-    vb = QdrantClient(qdrant_url)
+        # Use local on-disk storage for Qdrant when not in Docker
+        qdrant_local_path = "./qdrant_data"
+        logging.info(
+            f"Using local Qdrant storage at: {os.path.abspath(qdrant_local_path)}"
+        )
+        vb = QdrantClient(path=qdrant_local_path)
     await db.connect()
     server = grpc.aio.server()
     add_LeanStateSearchServiceServicer_to_server(

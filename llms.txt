@@ -34,3 +34,7 @@
 
 ### Continuous Integration
 - [ ] CI job that uses `uv` to install and runs lint, type-check, and unit tests 
+
+### AI Integration
+- [ ] Expose Lean-State-Search as a queryable tool (FastMCP / MCP server)
+  - [ ] Serve intermediate tactic context so downstream models can consume rich state information 

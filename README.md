@@ -94,6 +94,47 @@ poetry run python scripts/create_vector_store.py --rev v4.16.0
 
 Now your application can work properly in `http://localhost:${FRONTEND_PORT}`.
 
+## 🏃 Quick local demo (no Docker/Nix)
+
+```bash
+# 1. prerequisites: uv (https://github.com/astral-sh/uv) and grpcurl
+brew install uv grpcurl   # or use your OS package-manager
+
+# 2. create virtual-env & install deps
+uv venv          # creates .venv in project root
+uv sync          # installs backend & frontend Python deps
+
+# 3. generate code & push Prisma schema
+make proto                       # buf generate → state_search_be
+uv run python -m prisma db push  # creates tables
+
+# 4. write minimal sample data
+cd state-search-be
+uv run python scripts/upload_theorem.py \
+    --data-path demo_theorems.jsonl \
+    --rev demo2
+cd ..
+
+# 5. start backend (background)
+make run-be          # logs → /tmp/lean_state_search.log
+
+# 6. query via gRPC
+grpcurl -plaintext \
+    -import-path protos \
+    -proto state_search/v1/state_search.proto \
+    -d '{}' \
+    localhost:7720 \
+    state_search.v1.LeanStateSearchService/GetAllRev
+# → { "revs": ["demo2"] }
+```
+
+This runs Qdrant in *local* (embedded) mode, so no vector-store is
+populated; the demo proves Prisma ↔ gRPC ↔ HF-model wiring works end-to-end.
+
+For a full-blown test (vector search), either start a Qdrant server on
+`localhost:6333` **or** modify `scripts/create_vector_store.py` to use
+`QdrantClient(path="./qdrant_data")` the same way `main.py` does.
+
 ## 📖 References
 
 ### Training from scratch
